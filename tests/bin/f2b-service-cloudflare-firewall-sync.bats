@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# --- Setup / Teardown ---
+# ===== Setup / Teardown =====
 setup() {
 
     export SANDBOX="./tests/sandbox"
@@ -35,13 +35,13 @@ teardown() {
   rm -rf "$SANDBOX"
 }
 
-# --- Helper ---
+# ===== Helper =====
 log_contains() {
   local pattern="$1"
   grep -q "$pattern" "$TEST_SANDBOX/test.log"
 }
 
-# --- Tests ---
+# ===== Tests =====
 @test "sync creates checksum and logs for a single domain" {
   mkdir -p "$TEST_SANDBOX/base/domains/domain1.com"
   echo '{"domain":"domain1.com","bans":{}}' > "$TEST_SANDBOX/base/domains/domain1.com/state.json"

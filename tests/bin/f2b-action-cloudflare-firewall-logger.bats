@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# --- Setup / Teardown ---
+# ===== Setup / Teardown =====
 setup() {
 
     export SANDBOX="./tests/sandbox"
@@ -30,7 +30,7 @@ log_contains() {
   grep -q "$pattern" "$TEST_SANDBOX/test.log"
 }
 
-# --- Argument validation tests ---
+# ===== Argument validation tests =====
 @test "fails with insufficient arguments" {
   run "$SCRIPT"
   [ "$status" -eq 1 ]
@@ -43,7 +43,7 @@ log_contains() {
   [[ "$output" =~ "Invalid action" ]]
 }
 
-# --- Start / Stop / Ban / Unban (sandboxed) ---
+# ===== Start / Stop / Ban / Unban (sandboxed) =====
 @test "start initializes domain dir, state file and logs" {
   run "$SCRIPT" start myjail example.com
   [ "$status" -eq 0 ]
