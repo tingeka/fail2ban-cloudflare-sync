@@ -2,7 +2,11 @@
 
 # --- Setup / Teardown ---
 setup() {
-    export TEST_SANDBOX="${TEST_SANDBOX:-$(pwd)/test_sandbox_sync}"
+
+    export SANDBOX="./tests/sandbox"
+    rm -rf "$SANDBOX"
+
+    export TEST_SANDBOX="./tests/sandbox/f2b-service-cloudflare-firewall-sync"
     rm -rf "$TEST_SANDBOX"
 
     SCRIPT="$(pwd)/bin/f2b-service-cloudflare-firewall-sync.sh"
@@ -28,7 +32,7 @@ EOF
 }
 
 teardown() {
-  rm -rf "$TEST_SANDBOX"
+  rm -rf "$SANDBOX"
 }
 
 # --- Helper ---

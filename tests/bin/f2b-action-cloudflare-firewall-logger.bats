@@ -2,8 +2,12 @@
 
 # --- Setup / Teardown ---
 setup() {
+
+    export SANDBOX="./tests/sandbox"
+    rm -rf "$SANDBOX"
+    
     # Clean and create sandbox
-    export TEST_SANDBOX="${TEST_SANDBOX:-$(pwd)/test_sandbox}"
+    export TEST_SANDBOX="./tests/sandbox/f2b-service-cloudflare-firewall-logger"
     rm -rf "$TEST_SANDBOX"
     mkdir -p "$TEST_SANDBOX"
     
@@ -17,7 +21,7 @@ setup() {
 }
 
 teardown() {
-  rm -rf "$TEST_SANDBOX"
+  rm -rf "$SANDBOX"
 }
 
 # Helper to check log content
