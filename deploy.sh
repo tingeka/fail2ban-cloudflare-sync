@@ -47,7 +47,7 @@ run_cmd() {
         echo "[$ts][DRY-RUN] $*"
     else
         echo "[$ts][RUN] $*"
-        eval "$@"
+        "$@"
     fi
 }
 
