@@ -64,7 +64,7 @@ fail2ban → JSON state files → systemd path watcher → sync service → Clou
 ### Quick Install
 
 ```bash
-curl -s https://raw.githubusercontent.com/tingeka/fail2ban-cloudflare-sync/main/install.sh | sudo bash
+curl -s https://raw.githubusercontent.com/tingeka/fail2ban-cloudflare-sync/main/deploy.sh | sudo bash
 ```
 
 ### Manual Installation
@@ -159,6 +159,55 @@ State files are stored in `/run/fail2ban/cloudflare-firewall/domains/` with this
 - This prevents shorter bans from overriding longer ones (e.g., a 1-hour ban won't reduce an existing 24-hour ban)
 - All ban/unban operations happen locally before syncing to Cloudflare
 - The entire state file is sent to the worker on each sync (no partial updates)
+
+## Development
+
+### Setup
+
+Install development dependencies:
+
+```bash
+npm install
+```
+
+This installs:
+- **bats**: Testing framework for shell scripts
+- **shellcheck**: Static analysis tool for shell scripts  
+- **husky**: Git hooks for pre-commit linting
+
+### Testing
+
+Run the test suite locally using npm:
+
+```bash
+npm test
+```
+
+The project uses [Bats](https://github.com/bats-core/bats-core) for testing shell script functionality. Tests are organized in the `tests/` directory:
+
+```
+tests/
+├── deploy.bats                                    # Deployment script tests
+└── bin/
+    ├── f2b-action-cloudflare-firewall-logger.bats # Action logger tests  
+    └── f2b-service-cloudflare-firewall-sync.bats  # Sync service tests
+```
+
+Tests cover:
+- Script deployment and configuration
+- JSON state file management and atomic operations
+- API sync service behavior
+- Multi-domain scenarios
+
+### Linting
+
+Check shell script quality:
+
+```bash
+npm run lint
+```
+
+This runs `shellcheck` on all shell scripts and bats test files to catch common issues and maintain code quality.
 
 ## Troubleshooting
 
