@@ -1,48 +1,48 @@
 #!/usr/bin/env bats
 
+# --- Setup / Teardown ---
 setup() {
-  TEST_SANDBOX="$(pwd)/test_sandbox_sync"
-  export TEST_SANDBOX
-  rm -rf "$TEST_SANDBOX"
+    export TEST_SANDBOX="${TEST_SANDBOX:-$(pwd)/test_sandbox_sync}"
+    rm -rf "$TEST_SANDBOX"
 
-  # Base dirs inside sandbox
-  mkdir -p "$TEST_SANDBOX/base/domains"
-  mkdir -p "$TEST_SANDBOX/base/cache"
-  touch "$TEST_SANDBOX/test.log"
+    SCRIPT="$(pwd)/bin/f2b-service-cloudflare-firewall-sync.sh"
 
-  # Override paths for the script
-  export BASE_DIR="$TEST_SANDBOX/base"
-  export DOMAINS_DIR="$BASE_DIR/domains"
-  export CACHE_DIR="$BASE_DIR/cache"
-  export LOGFILE="$TEST_SANDBOX/test.log"
-
-  # Mock curl always succeeds by default
-  mkdir -p "$TEST_SANDBOX/bin"
-  cat > "$TEST_SANDBOX/bin/curl" <<'EOF'
+    # Do all the scaffolding here
+    mkdir -p "$TEST_SANDBOX/base/domains"
+    mkdir -p "$TEST_SANDBOX/base/cache" 
+    mkdir -p "$TEST_SANDBOX/bin"
+    
+    # Set up environment
+    export BASE_DIR="$TEST_SANDBOX/base"
+    export DOMAINS_DIR="$BASE_DIR/domains"
+    export CACHE_DIR="$BASE_DIR/cache"
+    export LOGFILE="$TEST_SANDBOX/test.log"
+    
+    # Mock curl
+    cat > "$TEST_SANDBOX/bin/curl" <<'EOF'
 #!/bin/bash
 echo '{"success":true}'
 EOF
-  chmod +x "$TEST_SANDBOX/bin/curl"
-  export PATH="$TEST_SANDBOX/bin:$PATH"
-
-  # Use the real sync script
-  WRAPPER="$(pwd)/bin/f2b-service-cloudflare-firewall-sync.sh"
+    chmod +x "$TEST_SANDBOX/bin/curl"
+    export PATH="$TEST_SANDBOX/bin:$PATH"
 }
+
 teardown() {
   rm -rf "$TEST_SANDBOX"
 }
 
-# Helper to check log content
+# --- Helper ---
 log_contains() {
   local pattern="$1"
   grep -q "$pattern" "$TEST_SANDBOX/test.log"
 }
 
+# --- Tests ---
 @test "sync creates checksum and logs for a single domain" {
   mkdir -p "$TEST_SANDBOX/base/domains/domain1.com"
   echo '{"domain":"domain1.com","bans":{}}' > "$TEST_SANDBOX/base/domains/domain1.com/state.json"
 
-  run "$WRAPPER"
+  run "$SCRIPT"
   [ "$status" -eq 0 ]
   [ -f "$TEST_SANDBOX/base/cache/domain1.com.sha256" ]
   log_contains "Sync successful for 'domain1.com'"
@@ -56,7 +56,7 @@ log_contains() {
   sha256sum "$TEST_SANDBOX/base/domains/domain2.com/state.json" | awk '{print $1}' \
     > "$TEST_SANDBOX/base/cache/domain2.com.sha256"
 
-  run "$WRAPPER"
+  run "$SCRIPT"
   [ "$status" -eq 0 ]
   log_contains "No changes detected for 'domain2.com', skipping sync."
 }
@@ -67,7 +67,7 @@ log_contains() {
     echo "{\"domain\":\"$d\",\"bans\":{}}" > "$TEST_SANDBOX/base/domains/$d/state.json"
   done
 
-  run "$WRAPPER"
+  run "$SCRIPT"
   [ "$status" -eq 0 ]
   for d in domain3.com domain4.com; do
     [ -f "$TEST_SANDBOX/base/cache/$d.sha256" ]
@@ -86,7 +86,7 @@ EOF
   mkdir -p "$TEST_SANDBOX/base/domains/faildomain.com"
   echo '{"domain":"faildomain.com","bans":{}}' > "$TEST_SANDBOX/base/domains/faildomain.com/state.json"
 
-  run "$WRAPPER"
+  run "$SCRIPT"
   [ "$status" -eq 0 ]
   log_contains "Sync failed for 'faildomain.com'; will retry on next run"
 
@@ -103,14 +103,14 @@ EOF
   echo '{"domain":"domain5.com","bans":{}}' > "$TEST_SANDBOX/base/domains/domain5.com/state.json"
 
   # First sync
-  run "$WRAPPER"
+  run "$SCRIPT"
   [ "$status" -eq 0 ]
   initial_checksum=$(<"$TEST_SANDBOX/base/cache/domain5.com.sha256")
 
   # Modify state file
   echo '{"domain":"domain5.com","bans":{"1.2.3.4":600}}' > "$TEST_SANDBOX/base/domains/domain5.com/state.json"
 
-  run "$WRAPPER"
+  run "$SCRIPT"
   [ "$status" -eq 0 ]
   new_checksum=$(<"$TEST_SANDBOX/base/cache/domain5.com.sha256")
   [ "$initial_checksum" != "$new_checksum" ]

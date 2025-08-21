@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/tingeka/fail2ban-cloudflare-sync#readme",
   "scripts": {
-    "test": "bats tests/",
-    "lint": "shellcheck bin/*.sh tests/*.bats",
+    "test": "bats tests/**",
+    "lint": "find bin tests -name '*.sh' -o -name '*.bats' | xargs shellcheck",
     "prepare": "husky"
   },
   "devDependencies": {
