@@ -1,0 +1,10 @@
+[Unit]
+Description=Sync Fail2Ban Cloudflare state files to Cloudflare API
+Wants=f2b-cloudflare-firewall-sync.path
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/f2b-service-cloudflare-sync.sh
+Nice=10
+CPUAccounting=yes
+MemoryAccounting=yes

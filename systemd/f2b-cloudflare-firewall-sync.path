@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch Fail2Ban Cloudflare state directory for changes
+
+[Path]
+PathModified=/run/fail2ban/cloudflare-firewall/domains
+# You can also add PathExists= or PathChanged= if you want finer control
+
+[Install]
+WantedBy=multi-user.target
