@@ -8,10 +8,10 @@
 
 set -euo pipefail
 
-readonly BASE_DIR="/run/fail2ban/cloudflare-firewall"
-readonly DOMAINS_DIR="$BASE_DIR/domains"
-readonly CACHE_DIR="$BASE_DIR/cache"
-readonly LOGFILE="/var/log/fail2ban-cloudflare-firewall.log"
+readonly BASE_DIR="${BASE_DIR:-/run/fail2ban/cloudflare-firewall}"
+readonly DOMAINS_DIR="${DOMAINS_DIR:-$BASE_DIR/domains}"
+readonly CACHE_DIR="${CACHE_DIR:-$BASE_DIR/cache}"
+readonly LOGFILE="${LOGFILE:-/var/log/fail2ban-cloudflare-firewall.log}"
 readonly API_ENDPOINT="https://endpoint.for.cloudflare.api/sync"  # Replace with actual endpoint
 
 mkdir -p "$CACHE_DIR"

@@ -1,0 +1,30 @@
+{
+  "name": "fail2ban-cloudflare-sync",
+  "version": "1.0.0",
+  "description": "A service that bridges fail2ban actions with Cloudflare's firewall API through an event-driven architecture. Instead of making direct API calls from fail2ban, this system writes ban events to JSON state files and syncs them to Cloudflare via a worker endpoint.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tingeka/fail2ban-cloudflare-sync.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tingeka/fail2ban-cloudflare-sync/issues"
+  },
+  "homepage": "https://github.com/tingeka/fail2ban-cloudflare-sync#readme",
+  "scripts": {
+    "test": "bats tests/",
+    "lint": "shellcheck bin/*.sh tests/*.bats",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "bats": "^1.12.0",
+    "husky": "^9.1.7",
+    "shellcheck": "^4.1.0"
+  }
+}

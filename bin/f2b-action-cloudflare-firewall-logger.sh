@@ -8,8 +8,9 @@
 set -euo pipefail
 
 # Configuration
-readonly LOGFILE="/var/log/fail2ban-cloudflare-firewall.log"
-readonly BASE_DIR="/run/fail2ban/cloudflare-firewall"
+: "${BASE_DIR:=/run/fail2ban/cloudflare-firewall}"
+: "${LOGFILE:=/var/log/fail2ban-cloudflare-firewall.log}"
+readonly BASE_DIR LOGFILE
 
 # Validate arguments early
 if [[ $# -lt 3 ]]; then
@@ -29,6 +30,7 @@ readonly DOMAIN_DIR="$DOMAINS_DIR/$DOMAIN"
 readonly STATE_FILE="$DOMAIN_DIR/state.json"
 readonly LOCK_FILE="$DOMAIN_DIR/state.lock"
 
+# shellcheck disable=SC2329
 cleanup_on_exit() {
     exec 200>&- 2>/dev/null || true
 }
@@ -89,7 +91,6 @@ atomic_json_update() {
     fi
 }
 
-
 case "$ACTION" in
     start)
         if ! mkdir -p "$DOMAIN_DIR" 2>/dev/null; then
@@ -139,6 +140,7 @@ case "$ACTION" in
             exit 1
         fi
 
+        # shellcheck disable=SC2016
         ban_filter='.bans[$ip] |= (if . == null or . < ($bantime | tonumber) then ($bantime | tonumber) else . end)'
 
         if atomic_json_update --arg ip "$IP" --argjson bantime "$BANTIME" "$ban_filter"; then
@@ -156,6 +158,7 @@ case "$ACTION" in
             exit 1
         fi
 
+        # shellcheck disable=SC2016
         unban_filter='del(.bans[$ip])'
 
         if atomic_json_update --arg ip "$IP" "$unban_filter"; then
