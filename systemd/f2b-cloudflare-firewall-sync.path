@@ -2,8 +2,9 @@
 Description=Watch Fail2Ban Cloudflare state directory for changes
 
 [Path]
-PathModified=/run/fail2ban/cloudflare-firewall/domains
-# You can also add PathExists= or PathChanged= if you want finer control
+PathChanged=/run/fail2ban/cloudflare-firewall/domains/state.changed
+# Specify which service to trigger
+Unit=f2b-cloudflare-firewall-sync.service
 
 [Install]
 WantedBy=multi-user.target

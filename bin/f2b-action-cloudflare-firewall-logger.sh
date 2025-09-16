@@ -30,6 +30,9 @@ readonly DOMAIN_DIR="$DOMAINS_DIR/$DOMAIN"
 readonly STATE_FILE="$DOMAIN_DIR/state.json"
 readonly LOCK_FILE="$DOMAIN_DIR/state.lock"
 
+# Marker file for systemd .path unit
+readonly TRIGGER_FILE="$BASE_DIR/state.changed"
+
 # shellcheck disable=SC2329
 cleanup_on_exit() {
     exec 200>&- 2>/dev/null || true
@@ -116,6 +119,8 @@ case "$ACTION" in
 
         log "Starting jail '$JAIL' for $DOMAIN"
         echo "Initialized jail '$JAIL' for $DOMAIN" >&2
+        # Touch trigger file for systemd
+        touch "$TRIGGER_FILE"
         ;;
 
     stop)
@@ -127,6 +132,8 @@ case "$ACTION" in
 
         log "Stopping jail '$JAIL' for $DOMAIN"
         echo "Stopped jail '$JAIL' for $DOMAIN" >&2
+        # Touch trigger file for systemd
+        touch "$TRIGGER_FILE"
         ;;
 
     ban)
@@ -150,6 +157,8 @@ case "$ACTION" in
             echo "Failed to update state for ban: $IP" >&2
             exit 1
         fi
+        # Touch trigger file for systemd
+        touch "$TRIGGER_FILE"
         ;;
 
     unban)
@@ -168,6 +177,8 @@ case "$ACTION" in
             echo "Failed to update state for unban: $IP" >&2
             exit 1
         fi
+        # Touch trigger file for systemd
+        touch "$TRIGGER_FILE"
         ;;
 
     *)
