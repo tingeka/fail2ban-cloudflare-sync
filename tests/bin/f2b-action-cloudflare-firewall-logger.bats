@@ -118,24 +118,24 @@ log_contains() {
 
 @test "trigger file is touched on ban" {
   "$SCRIPT" start jail example.com
-  rm -f "$BASE_DIR/state.changed"
+  rm -f "$BASE_DIR/domains/state.changed"
   run "$SCRIPT" ban jail example.com 1.2.3.4 600
   [ "$status" -eq 0 ]
-  [ -f "$BASE_DIR/state.changed" ]
+  [ -f "$BASE_DIR/domains/state.changed" ]
 }
 
 @test "trigger file is touched on unban" {
   "$SCRIPT" start jail example.com
   "$SCRIPT" ban jail example.com 1.2.3.4 600
-  rm -f "$BASE_DIR/state.changed"
+  rm -f "$BASE_DIR/domains/state.changed"
   run "$SCRIPT" unban jail example.com 1.2.3.4
   [ "$status" -eq 0 ]
-  [ -f "$BASE_DIR/state.changed" ]
+  [ -f "$BASE_DIR/domains/state.changed" ]
 }
 
 @test "concurrent updates leave state valid and trigger file exists" {
   "$SCRIPT" start jail example.com
-  rm -f "$BASE_DIR/state.changed"
+  rm -f "$BASE_DIR/domains/state.changed"
   (
     "$SCRIPT" ban jail example.com 1.2.3.4 600 &
     "$SCRIPT" ban jail example.com 5.6.7.8 300 &
@@ -144,15 +144,15 @@ log_contains() {
   )
   jq -e '.bans["5.6.7.8"] == 300 and (.bans["1.2.3.4"] | not)' \
     "$TEST_SANDBOX/base/domains/example.com/state.json"
-  [ -f "$BASE_DIR/state.changed" ]
+  [ -f "$BASE_DIR/domains/state.changed" ]
 }
 
 @test "multiple consecutive changes update trigger file timestamp" {
   "$SCRIPT" start jail example.com
   run "$SCRIPT" ban jail example.com 1.2.3.4 600
-  TS1=$(stat -c %Y "$BASE_DIR/state.changed")
+  TS1=$(stat -c %Y "$BASE_DIR/domains/state.changed")
   sleep 1
   run "$SCRIPT" ban jail example.com 5.6.7.8 300
-  TS2=$(stat -c %Y "$BASE_DIR/state.changed")
+  TS2=$(stat -c %Y "$BASE_DIR/domains/state.changed")
   [ "$TS2" -gt "$TS1" ]
 }

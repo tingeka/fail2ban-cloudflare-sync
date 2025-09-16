@@ -72,7 +72,7 @@ curl -s https://raw.githubusercontent.com/tingeka/fail2ban-cloudflare-sync/main/
 1. **Install scripts:**
    ```bash
    sudo cp bin/f2b-action-cloudflare-firewall-logger.sh /usr/local/bin/
-   sudo cp bin/f2b-service-cloudflare-sync.sh /usr/local/bin/
+   sudo cp bin/f2b-service-cloudflare-firewall-sync.sh /usr/local/bin/
    sudo chmod +x /usr/local/bin/f2b-*
    ```
 

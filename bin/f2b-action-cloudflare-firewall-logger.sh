@@ -31,7 +31,7 @@ readonly STATE_FILE="$DOMAIN_DIR/state.json"
 readonly LOCK_FILE="$DOMAIN_DIR/state.lock"
 
 # Marker file for systemd .path unit
-readonly TRIGGER_FILE="$BASE_DIR/state.changed"
+readonly TRIGGER_FILE="$DOMAINS_DIR/state.changed"
 
 # shellcheck disable=SC2329
 cleanup_on_exit() {
